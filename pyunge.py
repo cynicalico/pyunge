@@ -1,6 +1,7 @@
 import moderngl as mgl
 import moderngl_window as mglw
 import numpy as np
+import array
 
 
 class Test(mglw.WindowConfig):
@@ -32,11 +33,11 @@ class Test(mglw.WindowConfig):
         )
         
         self.vbo = self.ctx.buffer(reserve=6*4, dynamic=True)
-        self.vbo.write(np.array([
+        self.vbo.write(array.array('f', [
             -0.5, -0.5,
              0.5, -0.5,
              0.0,  0.5
-        ], dtype='f4'))
+        ]))
 
         self.vao = self.ctx.vertex_array(self.prog, [
             (self.vbo, '2f', 'in_vert')

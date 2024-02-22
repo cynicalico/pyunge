@@ -1,39 +1,53 @@
-from pyunge.vector import Vector
+from pyunge.vector import PyBuf, ArrBuf, NpBuf
 import numpy as np
 import time
+import array
 
 
 def py_arr(a):
     a.clear()
-    for i in range(1000):
-        a.extend([1, 2, 3, 1, 2, 3, 1, 2, 3])
+    for _ in range(10000):
+        a.add([1.0, 2.0, 3.0, 1.0, 2.0, 3.0, 1.0, 2.0, 3.0])
+    np.array(a.data)
+
+
+def py_arr_arr(a):
+    a.clear()
+    for _ in range(10000):
+        a.add(array.array("f", [1.0, 2.0, 3.0, 1.0, 2.0, 3.0, 1.0, 2.0, 3.0]))
 
 
 def np_vec(a):
     a.clear()
-    for i in range(1000):
-        a.add(np.array([1.0, 2.0, 3.0, 1.0, 2.0, 3.0, 1.0, 2.0, 3.0]))
+    for _ in range(10000):
+        a.add([1.0, 2.0, 3.0, 1.0, 2.0, 3.0, 1.0, 2.0, 3.0])
 
 
-if __name__ == '__main__':
-    # v = Vector(1, fill_reverse=True)
-
-    # v.add([1, 2, 3])
-    # v.add([4, 5, 6])
-    # v.add([7, 8])
-
-    # print(v.data)
-
-    a = []
+def bench(a, f):
     t1 = time.time()
-    for _ in range(1000):
-        py_arr(a)
+    for _ in range(60):
+        f(a)
     t2 = time.time()
     print(t2 - t1)
 
-    a = Vector(1, fill_reverse=False)
-    t1 = time.time()
-    for _ in range(1000):
-        np_vec(a)
-    t2 = time.time()
-    print(t2 - t1)
+
+if __name__ == "__main__":
+    print("Forwards")
+    a = PyBuf(fill_reverse=False)
+    bench(a, py_arr)
+
+    a = ArrBuf(1, fill_reverse=False)
+    bench(a, py_arr_arr)
+
+    a = NpBuf(1, fill_reverse=False)
+    bench(a, np_vec)
+
+    print("Reverse")
+    a = PyBuf(fill_reverse=True)
+    bench(a, py_arr)
+
+    a = ArrBuf(1, fill_reverse=True)
+    bench(a, py_arr_arr)
+
+    a = NpBuf(1, fill_reverse=True)
+    bench(a, np_vec)
