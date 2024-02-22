@@ -1,57 +1,77 @@
 import moderngl as mgl
 import moderngl_window as mglw
-import numpy as np
-import array
+import random
+from pyunge.vbuffer import VBuffer
+
+
+def scale(x, x_min, x_max, t_min, t_max):
+    return ((x - x_min) / (x_max - x_min)) * (t_max - t_min) + t_min
 
 
 class Test(mglw.WindowConfig):
     gl_version = (3, 3)
-    window_size = (500, 500)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
         self.prog = self.ctx.program(
-            vertex_shader='''
+            vertex_shader="""
                 #version 330
 
                 in vec2 in_vert;
+                in vec3 in_color;
+
+                out vec3 out_color;
 
                 void main() {
+                    out_color = in_color;
                     gl_Position = vec4(in_vert, 0.0, 1.0);
                 }
-            ''',
-            fragment_shader='''
+            """,
+            fragment_shader="""
                 #version 330
 
-                out vec4 f_color;
+                in vec3 out_color;
+                
+                out vec4 FragColor;
 
                 void main() {
-                    f_color = vec4(0.3, 0.5, 1.0, 1.0);
+                    FragColor = vec4(out_color, 1.0);
                 }
-            ''',
+            """,
         )
-        
-        self.vbo = self.ctx.buffer(reserve=6*4, dynamic=True)
-        self.vbo.write(array.array('f', [
-            -0.5, -0.5,
-             0.5, -0.5,
-             0.0,  0.5
-        ]))
 
-        self.vao = self.ctx.vertex_array(self.prog, [
-            (self.vbo, '2f', 'in_vert')
-        ])
+        self.vbo = VBuffer(self.ctx, 5, True)
+        r = random.uniform(0.5, 1.0)
+        g = random.uniform(0.5, 1.0)
+        b = random.uniform(0.5, 1.0)
+        self.tri(-0.5, -0.5, 0.5, -0.5, 0, 0.5, r, g, b)
+
+        self.vao = self.ctx.vertex_array(self.prog, [(self.vbo.buf, "2f 3f", "in_vert", "in_color")])
+
+    def tri(self, x0, y0, x1, y1, x2, y2, r, g, b):
+        self.vbo.add([x0, y0, r, g, b, x1, y1, r, g, b, x2, y2, r, g, b])
 
     def key_event(self, key, action, modifiers):
-        return super().key_event(key, action, modifiers)
+        pass
 
-    def mouse_position_event(self, x, y, dx, dy):
-        print("Mouse position:", x, y, dx, dy)
+    def mouse_press_event(self, x, y, button):
+        t_x = scale(x, 0, self.wnd.width, -1.0, 1.0)
+        t_y = scale(y, 0, self.wnd.height, -1.0, 1.0)
+        r = random.uniform(0.5, 1.0)
+        g = random.uniform(0.5, 1.0)
+        b = random.uniform(0.5, 1.0)
+        self.tri(-1.0, -1.0, 1.0, -1.0, t_x, -t_y, r, g, b)
 
     def render(self, time, frametime):
+        self.ctx.viewport = (0, 0, self.wnd.width, self.wnd.height)
+
         self.ctx.clear(1.0, 0.0, 0.0, 0.0)
-        self.vao.render()
+
+        self.vbo.sync()
+        self.vao.render(
+            vertices=self.vbo.vec.size() // 5, first=self.vbo.vec.front() // 5
+        )
 
 
 def main():
