@@ -41,7 +41,7 @@ class Test(mglw.WindowConfig):
             """,
         )
 
-        self.vbo = VBuffer(self.ctx, 5, True)
+        self.vbo = VBuffer(self.ctx, 5, fill_reverse=True)
         r = random.uniform(0.5, 1.0)
         g = random.uniform(0.5, 1.0)
         b = random.uniform(0.5, 1.0)

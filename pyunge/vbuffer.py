@@ -1,10 +1,9 @@
 from pyunge.vector import Vector
 import moderngl as mgl
-import array
 
 
 class VBuffer:
-    def __init__(self, ctx: mgl.Context, size, fill_reverse):
+    def __init__(self, ctx: mgl.Context, size, *, fill_reverse):
         self.ctx = ctx
         self.fill_reverse = fill_reverse
 
@@ -26,18 +25,17 @@ class VBuffer:
                 self.buf.orphan(self.vec.capacity() * self.vec.data.itemsize)
             self.buf.write(self.vec.data)
             self.bufpos = self.vec.front() if self.fill_reverse else self.vec.back()
-        else:
-            if self.fill_reverse and self.bufpos > self.vec.front():
-                self.buf.write(
-                    self.vec.data[
-                        self.vec.front() : self.vec.front()
-                        + (self.bufpos - self.vec.front())
-                    ],
-                    self.vec.front() * self.vec.data.itemsize,
-                )
-                self.bufpos = self.vec.front()
-            elif not self.fill_reverse and self.bufpos < self.vec.back():
-                self.buf.write(
-                    self.vec.data[self.bufpos :], self.bufpos * self.vec.data.itemsize
-                )
-                self.bufpos = self.vec.back()
+        elif self.fill_reverse and self.bufpos > self.vec.front():
+            self.buf.write(
+                self.vec.data[
+                    self.vec.front() : self.vec.front()
+                    + (self.bufpos - self.vec.front())
+                ],
+                self.vec.front() * self.vec.data.itemsize,
+            )
+            self.bufpos = self.vec.front()
+        elif not self.fill_reverse and self.bufpos < self.vec.back():
+            self.buf.write(
+                self.vec.data[self.bufpos :], self.bufpos * self.vec.data.itemsize
+            )
+            self.bufpos = self.vec.back()
