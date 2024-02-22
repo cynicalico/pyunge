@@ -16,28 +16,28 @@ class Test(mglw.WindowConfig):
 
         self.prog = self.ctx.program(
             vertex_shader="""
-                #version 330
+#version 330
 
-                in vec2 in_vert;
-                in vec3 in_color;
+in vec2 in_vert;
+in vec3 in_color;
 
-                out vec3 out_color;
+out vec3 out_color;
 
-                void main() {
-                    out_color = in_color;
-                    gl_Position = vec4(in_vert, 0.0, 1.0);
-                }
+void main() {
+    out_color = in_color;
+    gl_Position = vec4(in_vert, 0.0, 1.0);
+}
             """,
             fragment_shader="""
-                #version 330
+#version 330
 
-                in vec3 out_color;
-                
-                out vec4 FragColor;
+in vec3 out_color;
 
-                void main() {
-                    FragColor = vec4(out_color, 1.0);
-                }
+out vec4 FragColor;
+
+void main() {
+    FragColor = vec4(out_color, 1.0);
+}
             """,
         )
 
@@ -47,7 +47,9 @@ class Test(mglw.WindowConfig):
         b = random.uniform(0.5, 1.0)
         self.tri(-0.5, -0.5, 0.5, -0.5, 0, 0.5, r, g, b)
 
-        self.vao = self.ctx.vertex_array(self.prog, [(self.vbo.buf, "2f 3f", "in_vert", "in_color")])
+        self.vao = self.ctx.vertex_array(
+            self.prog, [(self.vbo.buf, "2f 3f", "in_vert", "in_color")]
+        )
 
     def tri(self, x0, y0, x1, y1, x2, y2, r, g, b):
         self.vbo.add([x0, y0, r, g, b, x1, y1, r, g, b, x2, y2, r, g, b])
@@ -69,9 +71,7 @@ class Test(mglw.WindowConfig):
         self.ctx.clear(1.0, 0.0, 0.0, 0.0)
 
         self.vbo.sync()
-        self.vao.render(
-            vertices=self.vbo.vec.size() // 5, first=self.vbo.vec.front() // 5
-        )
+        self.vao.render(vertices=self.vbo.size() // 5, first=self.vbo.front() // 5)
 
 
 def main():
