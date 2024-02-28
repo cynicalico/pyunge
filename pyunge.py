@@ -48,10 +48,10 @@ void main() {
             """,
         )
 
-        self.z_max_uniform = self.prog['z_max']
+        self.z_max_uniform = self.prog["z_max"]
         self.z_max = 2.0
 
-        self.mvp_uniform = self.prog['mvp']
+        self.mvp_uniform = self.prog["mvp"]
 
         self.vbo = VBuffer(self.ctx, 6, fill_reverse=True)
         r = random.uniform(0.5, 1.0)
