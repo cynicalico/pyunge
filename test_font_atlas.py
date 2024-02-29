@@ -4,10 +4,11 @@ import png
 
 
 def main():
-    chars_to_pack = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!@#$%^&*()-_=+`~[{]}\\;:'\",<.>/?"
+    # chars_to_pack = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!@#$%^&*()-_=+`~[{]}\\;:'\",<.>/?"
+    chars_to_pack = "元気原器衒気減輝原基"
 
     img_w, img_h = 100, 100
-    img_data = [255, 0, 0] * img_w * img_h
+    img_data = [0, 0, 0] * img_w * img_h
 
     def write_bitmap(buf, rows, width, pitch, x, y):
         for i in range(rows):
@@ -15,7 +16,7 @@ def main():
             buf_off = (pitch * i)
             img_data[img_off:img_off+width] = buf[buf_off:buf_off+width]
 
-    face = freetype.Face("res/FiraCode-Regular.ttf")
+    face = freetype.Face("res/NotoSansJP-Regular.ttf")
     face.set_char_size(12*64)
 
     packer = rectpack.newPacker(mode=rectpack.PackingMode.Online, rotation=False)
