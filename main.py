@@ -1,10 +1,15 @@
-from pyunge.engine import *
-import pprint
+import pyunge
 
 
 def main():
-    fs = Fungespace('programs/sanity.bf')
-    print(fs)
+    fs = pyunge.Fungespace()
+    fs.set(1, 1, 'A')
+    fs.set(1, -1, 'A')
+    fs.set(-1, 1, 'A')
+    fs.set(-1, -1, 'A')
+    fs.set(-1, -5, 'B')
+
+    print(fs, end='')
 
 
 if __name__ == "__main__":
