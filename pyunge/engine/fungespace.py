@@ -22,6 +22,10 @@ class Fungespace:
             s += '\n'
         return s
 
+    def in_bounds(self, r, c):
+        return self.min_coord[0] <= r <= self.max_coord[0] and \
+            self.min_coord[1] <= c <= self.max_coord[1]
+
     def get(self, r, c):
         q, r, c = self.quadrantify_(r, c)
 
@@ -33,7 +37,7 @@ class Fungespace:
 
         return self.cells[q][r][c]
 
-    def set(self, r, c, v):
+    def put(self, r, c, v):
         self.min_coord[0] = min(self.min_coord[0], r)
         self.min_coord[1] = min(self.min_coord[1], c)
 

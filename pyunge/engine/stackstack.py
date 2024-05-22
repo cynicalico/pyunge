@@ -30,8 +30,8 @@ class StackStack:
     def swap(self):
         v1 = self.pop()
         v2 = self.pop()
-        self.push(v2)
         self.push(v1)
+        self.push(v2)
 
     def clear(self):
         self.stacks[self.toss].clear()
@@ -95,6 +95,8 @@ class StackStack:
             dst = self.soss
             n = abs(n)
 
+        # TODO: Make this do a slice assignment instead,
+        #       this is really inefficient
         for _ in range(n):
             self.push_(self.pop_(src), dst)
 
