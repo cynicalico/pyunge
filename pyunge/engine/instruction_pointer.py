@@ -1,4 +1,6 @@
+import copy
 import random
+
 from .instruction_mapping import InstructionMapping
 from .stackstack import StackStack
 
@@ -6,10 +8,13 @@ from .stackstack import StackStack
 class InstructionPointer:
     def __init__(self, *, pos=None, delta=None):
         self.pos = pos or [0, 0]
+        self.saved_pos = None
         self.delta = delta or [0, 1]
+        self.saved_delta = None
         self.alive = True
         self.stringmode = False
         self.stack = StackStack()
+        self.storage_offset = [0, 0]
         self.instruction_mapping = InstructionMapping()
 
     def step_(self):
@@ -57,6 +62,33 @@ class InstructionPointer:
             self.step_()
         self.reverse()
         self.step_()
+
+    def save_pos(self):
+        self.saved_pos = copy.copy(self.pos)
+
+    def restore_pos(self):
+        self.pos = copy.copy(self.saved_pos)
+
+    def save_delta(self):
+        self.saved_delta = copy.copy(self.delta)
+
+    def restore_delta(self):
+        self.delta = copy.copy(self.saved_delta)
+
+    def begin_block(self):
+        self.stack.begin_block(self.storage_offset)
+        self.storage_offset = [self.pos[0] + self.delta[0], self.pos[1] + self.delta[1]]
+
+    def end_block(self):
+        success, restored_storage_offset = self.stack.end_block()
+        if not success:
+            self.reverse()
+        else:
+            self.storage_offset = restored_storage_offset
+
+    def stack_under_stack(self):
+        if not self.stack.stack_under_stack():
+            self.reverse()
 
     def absolute_vector(self, delta):
         self.delta = delta

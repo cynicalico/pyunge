@@ -55,7 +55,7 @@ class StackStack:
 
         else:
             for _ in range(abs(n)):
-                self.pop_(self.soss)
+                self.push_(0, self.soss)
 
         self.extend_(storage_offset, self.soss)
 

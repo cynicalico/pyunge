@@ -2,10 +2,11 @@ import enum
 
 
 class InstructionResult(enum.Enum):
-    NONE = enum.auto(),
-    KILL = enum.auto(),
+    NONE = enum.auto()
+    KILL = enum.auto()
     SPLIT = enum.auto()
     QUIT = enum.auto()
+    ITER = enum.auto()
 
 
 class InstructionMapping:
@@ -116,319 +117,338 @@ class InstructionMapping:
 
         f = self.mapping.get(ins)
         if f is not None:
-            return f(ip, fs)
+            return f(ins, ip, fs)
         else:
             ip.reverse()
             return InstructionResult.NONE, None
 
-    def empty_(self, ip, fs):
+    def empty_(self, ins, ip, fs):
         return InstructionResult.FIND, None
 
-    def logical_not_(self, ip, fs):
+    def logical_not_(self, ins, ip, fs):
         v = ip.stack.pop()
         ip.stack.push(1 if v == 0 else 0)
         return InstructionResult.NONE, None
 
-    def toggle_stringmode_(self, ip, fs):
+    def toggle_stringmode_(self, ins, ip, fs):
         ip.stringmode = not ip.stringmode
         return InstructionResult.NONE, None
 
-    def trampoline_(self, ip, fs):
+    def trampoline_(self, ins, ip, fs):
         ip.step(fs)
         return InstructionResult.NONE, None
 
-    def pop_(self, ip, fs):
+    def pop_(self, ins, ip, fs):
         ip.stack.pop()
         return InstructionResult.NONE, None
 
-    def remainder_(self, ip, fs):
+    def remainder_(self, ins, ip, fs):
         b = ip.stack.pop()
         a = ip.stack.pop()
         ip.stack.push(0 if b == 0 else a % b)
         return InstructionResult.NONE, None
 
-    def input_integer_(self, ip, fs):
-        ip.reverse() # TODO
+    def input_integer_(self, ins, ip, fs):
+        ip.reverse()  # TODO
         return InstructionResult.NONE, None
 
-    def fetch_character_(self, ip, fs):
-        ip.reverse() # TODO
+    def fetch_character_(self, ins, ip, fs):
+        ip.step(fs)
+        ip.stack.push(fs.get(*ip.pos))
         return InstructionResult.NONE, None
 
-    def load_semantics_(self, ip, fs):
-        ip.reverse() # TODO
+    def load_semantics_(self, ins, ip, fs):
+        ip.reverse()  # TODO
         return InstructionResult.NONE, None
 
-    def unload_semantics_(self, ip, fs):
-        ip.reverse() # TODO
+    def unload_semantics_(self, ins, ip, fs):
+        ip.reverse()  # TODO
         return InstructionResult.NONE, None
 
-    def multiply_(self, ip, fs):
+    def multiply_(self, ins, ip, fs):
         b = ip.stack.pop()
         a = ip.stack.pop()
         ip.stack.push(a * b)
         return InstructionResult.NONE, None
 
-    def add_(self, ip, fs):
+    def add_(self, ins, ip, fs):
         b = ip.stack.pop()
         a = ip.stack.pop()
         ip.stack.push(a + b)
         return InstructionResult.NONE, None
 
-    def output_character_(self, ip, fs):
+    def output_character_(self, ins, ip, fs):
         v = ip.stack.pop()
         print(chr(v), end='')
         return InstructionResult.NONE, None
 
-    def subtract_(self, ip, fs):
+    def subtract_(self, ins, ip, fs):
         b = ip.stack.pop()
         a = ip.stack.pop()
         ip.stack.push(a - b)
         return InstructionResult.NONE, None
 
-    def output_integer_(self, ip, fs):
+    def output_integer_(self, ins, ip, fs):
         v = ip.stack.pop()
         print(f"{v} ", end='')
         return InstructionResult.NONE, None
 
-    def divide_(self, ip, fs):
+    def divide_(self, ins, ip, fs):
         b = ip.stack.pop()
         a = ip.stack.pop()
-        ip.stack.push(0 if b == 0 else a / b)
+        ip.stack.push(0 if b == 0 else a // b)
         return InstructionResult.NONE, None
 
-    def push_zero_(self, ip, fs):
+    def push_zero_(self, ins, ip, fs):
         ip.stack.push(0)
         return InstructionResult.NONE, None
 
-    def push_one_(self, ip, fs):
+    def push_one_(self, ins, ip, fs):
         ip.stack.push(1)
         return InstructionResult.NONE, None
 
-    def push_two_(self, ip, fs):
+    def push_two_(self, ins, ip, fs):
         ip.stack.push(2)
         return InstructionResult.NONE, None
 
-    def push_three_(self, ip, fs):
+    def push_three_(self, ins, ip, fs):
         ip.stack.push(3)
         return InstructionResult.NONE, None
 
-    def push_four_(self, ip, fs):
+    def push_four_(self, ins, ip, fs):
         ip.stack.push(4)
         return InstructionResult.NONE, None
 
-    def push_five_(self, ip, fs):
+    def push_five_(self, ins, ip, fs):
         ip.stack.push(5)
         return InstructionResult.NONE, None
 
-    def push_six_(self, ip, fs):
+    def push_six_(self, ins, ip, fs):
         ip.stack.push(6)
         return InstructionResult.NONE, None
 
-    def push_seven_(self, ip, fs):
+    def push_seven_(self, ins, ip, fs):
         ip.stack.push(7)
         return InstructionResult.NONE, None
 
-    def push_eight_(self, ip, fs):
+    def push_eight_(self, ins, ip, fs):
         ip.stack.push(8)
         return InstructionResult.NONE, None
 
-    def push_niner_(self, ip, fs):
+    def push_niner_(self, ins, ip, fs):
         ip.stack.push(9)
         return InstructionResult.NONE, None
 
-    def duplicate_(self, ip, fs):
+    def duplicate_(self, ins, ip, fs):
         ip.stack.duplicate()
         return InstructionResult.NONE, None
 
-    def jump_over_(self, ip, fs):
-        ip.reverse() # TODO
+    def jump_over_(self, ins, ip, fs):
+        ip.reverse()  # TODO
         return InstructionResult.NONE, None
 
-    def go_west_(self, ip, fs):
+    def go_west_(self, ins, ip, fs):
         ip.go_west()
         return InstructionResult.NONE, None
 
-    def execute_(self, ip, fs):
-        ip.reverse() # TODO
+    def execute_(self, ins, ip, fs):
+        ip.reverse()  # TODO
         return InstructionResult.NONE, None
 
-    def go_east_(self, ip, fs):
+    def go_east_(self, ins, ip, fs):
         ip.go_east()
         return InstructionResult.NONE, None
 
-    def go_away_(self, ip, fs):
+    def go_away_(self, ins, ip, fs):
         ip.go_away()
         return InstructionResult.NONE, None
 
-    def stop_(self, ip, fs):
+    def stop_(self, ins, ip, fs):
         ip.alive = False
         return InstructionResult.KILL, None
 
-    def fingerprint_defined_(self, ip, fs):
-        ip.reverse() # TODO
+    def fingerprint_defined_(self, ins, ip, fs):
+        ip.reverse()  # TODO
         return InstructionResult.NONE, None
 
-    def turn_left_(self, ip, fs):
+    def turn_left_(self, ins, ip, fs):
         ip.turn_left()
         return InstructionResult.NONE, None
 
-    def swap_(self, ip, fs):
+    def swap_(self, ins, ip, fs):
         ip.stack.swap()
         return InstructionResult.NONE, None
 
-    def turn_right_(self, ip, fs):
+    def turn_right_(self, ins, ip, fs):
         ip.turn_right()
         return InstructionResult.NONE, None
 
-    def go_north_(self, ip, fs):
+    def go_north_(self, ins, ip, fs):
         ip.go_north()
         return InstructionResult.NONE, None
 
-    def east_west_if_(self, ip, fs):
+    def east_west_if_(self, ins, ip, fs):
         v = ip.stack.pop()
         if v == 0:
-            self.go_east_(ip, fs)
+            self.go_east_(None, ip, fs)
         else:
-            self.go_west_(ip, fs)
+            self.go_west_(None, ip, fs)
         return InstructionResult.NONE, None
 
-    def greater_than_(self, ip, fs):
+    def greater_than_(self, ins, ip, fs):
         b = ip.stack.pop()
         a = ip.stack.pop()
         ip.stack.push(1 if a > b else 0)
         return InstructionResult.NONE, None
 
-    def push_ten_(self, ip, fs):
+    def push_ten_(self, ins, ip, fs):
         ip.stack.push(10)
         return InstructionResult.NONE, None
 
-    def push_eleven_(self, ip, fs):
+    def push_eleven_(self, ins, ip, fs):
         ip.stack.push(11)
         return InstructionResult.NONE, None
 
-    def push_twelve_(self, ip, fs):
+    def push_twelve_(self, ins, ip, fs):
         ip.stack.push(12)
         return InstructionResult.NONE, None
 
-    def push_thirteen_(self, ip, fs):
+    def push_thirteen_(self, ins, ip, fs):
         ip.stack.push(13)
         return InstructionResult.NONE, None
 
-    def push_fourteen_(self, ip, fs):
+    def push_fourteen_(self, ins, ip, fs):
         ip.stack.push(14)
         return InstructionResult.NONE, None
 
-    def push_fifteen_(self, ip, fs):
+    def push_fifteen_(self, ins, ip, fs):
         ip.stack.push(15)
         return InstructionResult.NONE, None
 
-    def get_(self, ip, fs):
+    def get_(self, ins, ip, fs):
         r = ip.stack.pop()
         c = ip.stack.pop()
-        v = fs.get(r, c)
+        v = fs.get(r + ip.storage_offset[0], c + ip.storage_offset[1])
         ip.stack.push(v)
         return InstructionResult.NONE, None
 
-    def go_high_(self, ip, fs):
-        ip.reverse() # TODO
+    def go_high_(self, ins, ip, fs):
+        ip.reverse()  # TODO
         return InstructionResult.NONE, None
 
-    def input_file_(self, ip, fs):
-        ip.reverse() # TODO
+    def input_file_(self, ins, ip, fs):
+        ip.reverse()  # TODO
         return InstructionResult.NONE, None
 
-    def jump_forward_(self, ip, fs):
-        ip.reverse() # TODO
+    def jump_forward_(self, ins, ip, fs):
+        n = ip.stack.pop()
+        ip.save_delta()
+        if n < 0:
+            ip.reverse()
+            n = abs(n)
+        for _ in range(n):
+            ip.step(fs)
+        ip.restore_delta()
         return InstructionResult.NONE, None
 
-    def iterate_(self, ip, fs):
-        ip.reverse() # TODO
+    def iterate_(self, ins, ip, fs):
+        n = ip.stack.pop()
+        ip.save_pos()
+        ip.move(ins, fs)
+        if n == 0:  # Just skip
+            return InstructionResult.NONE, None
+        ins = fs.get(*ip.pos)
+        ip.restore_pos()
+        res = [self.perform(ins, ip, fs) for _ in range(n)]
+        return InstructionResult.ITER, res
+
+    def go_low_(self, ins, ip, fs):
+        ip.reverse()  # TODO
         return InstructionResult.NONE, None
 
-    def go_low_(self, ip, fs):
-        ip.reverse() # TODO
+    def high_low_if_(self, ins, ip, fs):
+        ip.reverse()  # TODO
         return InstructionResult.NONE, None
 
-    def high_low_if_(self, ip, fs):
-        ip.reverse() # TODO
+    def clear_stack_(self, ins, ip, fs):
+        ip.stack.clear()
         return InstructionResult.NONE, None
 
-    def clear_stack_(self, ip, fs):
-        ip.reverse() # TODO
+    def output_file_(self, ins, ip, fs):
+        ip.reverse()  # TODO
         return InstructionResult.NONE, None
 
-    def output_file_(self, ip, fs):
-        ip.reverse() # TODO
-        return InstructionResult.NONE, None
-
-    def put_(self, ip, fs):
+    def put_(self, ins, ip, fs):
         r = ip.stack.pop()
         c = ip.stack.pop()
         v = ip.stack.pop()
-        fs.put(r, c, v)
+        fs.put(r + ip.storage_offset[0], c + ip.storage_offset[1], v)
         return InstructionResult.NONE, None
 
-    def quit_(self, ip, fs):
-        ip.reverse() # TODO
+    def quit_(self, ins, ip, fs):
+        ip.reverse()  # TODO
         return InstructionResult.NONE, None
 
-    def reflect_(self, ip, fs):
+    def reflect_(self, ins, ip, fs):
         ip.reverse()
         return InstructionResult.NONE, None
 
-    def store_character_(self, ip, fs):
-        ip.reverse() # TODO
+    def store_character_(self, ins, ip, fs):
+        c = ip.stack.pop()
+        ip.step(fs)
+        fs.put(*ip.pos, c)
         return InstructionResult.NONE, None
 
-    def split_(self, ip, fs):
-        ip.reverse() # TODO
+    def split_(self, ins, ip, fs):
+        ip.reverse()  # TODO
         return InstructionResult.NONE, None
 
-    def stack_under_stack_(self, ip, fs):
-        ip.reverse() # TODO
+    def stack_under_stack_(self, ins, ip, fs):
+        ip.stack_under_stack()
         return InstructionResult.NONE, None
 
-    def go_south_(self, ip, fs):
+    def go_south_(self, ins, ip, fs):
         ip.go_south()
         return InstructionResult.NONE, None
 
-    def compare_(self, ip, fs):
+    def compare_(self, ins, ip, fs):
         b = ip.stack.pop()
         a = ip.stack.pop()
         if a > b:
-            self.turn_left_(ip, fs)
+            self.turn_right_(None, ip, fs)
         elif b > a:
-            self.turn_right_(ip, fs)
+            self.turn_left_(None, ip, fs)
         return InstructionResult.NONE, None
 
-    def absolute_delta_(self, ip, fs):
-        ip.reverse() # TODO
+    def absolute_delta_(self, ins, ip, fs):
+        r = ip.stack.pop()
+        c = ip.stack.pop()
+        ip.absolute_vector([r, c])
         return InstructionResult.NONE, None
 
-    def get_sysinfo_(self, ip, fs):
-        ip.reverse() # TODO
+    def get_sysinfo_(self, ins, ip, fs):
+        ip.reverse()  # TODO
         return InstructionResult.NONE, None
 
-    def no_operation_(self, ip, fs):
+    def no_operation_(self, ins, ip, fs):
         return InstructionResult.NONE, None
 
-    def begin_block_(self, ip, fs):
-        ip.reverse() # TODO
+    def begin_block_(self, ins, ip, fs):
+        ip.begin_block()
         return InstructionResult.NONE, None
 
-    def north_south_if_(self, ip, fs):
+    def north_south_if_(self, ins, ip, fs):
         v = ip.stack.pop()
         if v == 0:
-            self.go_south_(ip, fs)
+            self.go_south_(None, ip, fs)
         else:
-            self.go_north_(ip, fs)
+            self.go_north_(None, ip, fs)
         return InstructionResult.NONE, None
 
-    def end_block_(self, ip, fs):
-        ip.reverse() # TODO
+    def end_block_(self, ins, ip, fs):
+        ip.end_block()
         return InstructionResult.NONE, None
 
-    def input_character_(self, ip, fs):
-        ip.reverse() # TODO
+    def input_character_(self, ins, ip, fs):
+        ip.reverse()  # TODO
         return InstructionResult.NONE, None
