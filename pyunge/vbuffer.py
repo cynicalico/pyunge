@@ -57,12 +57,12 @@ class VBuffer:
                 old_size = (self.cap // 2) - self.pos
                 old_pos = self.pos
                 self.pos = self.cap - old_size
-                self.data[self.pos :] = self.data[old_pos : old_pos + old_size]
+                self.data[self.pos:] = self.data[old_pos: old_pos + old_size]
 
         l = self.pos
         if self.fill_reverse:
             l -= len(new_data)
-        self.data[l : l + len(new_data)] = new_data
+        self.data[l: l + len(new_data)] = new_data
 
         if self.fill_reverse:
             self.pos -= len(new_data)
@@ -78,10 +78,10 @@ class VBuffer:
         elif self.fill_reverse and self.bufpos > self.front():
             unbuf_size = self.bufpos - self.front()
             self.buf.write(
-                self.data[self.front() : self.front() + unbuf_size],
+                self.data[self.front(): self.front() + unbuf_size],
                 self.front() * self.data.itemsize,
             )
             self.bufpos = self.front()
         elif not self.fill_reverse and self.bufpos < self.back():
-            self.buf.write(self.data[self.bufpos :], self.bufpos * self.data.itemsize)
+            self.buf.write(self.data[self.bufpos:], self.bufpos * self.data.itemsize)
             self.bufpos = self.back()
