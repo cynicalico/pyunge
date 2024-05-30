@@ -68,9 +68,9 @@ class Fungespace:
     def load_src_(self, path):
         self.clear_()
         try:
-            with open(path, 'r') as f:
+            with open(path, 'rb') as f:
                 for line in f:
-                    filtered_line = list(filter(lambda c: c not in [10, 13], map(ord, line)))
+                    filtered_line = list(filter(lambda c: c not in [10, 12, 13], line))
                     self.cells[self.QUAD1].append(filtered_line)
 
                     self.max_coord[1] = max(self.max_coord[1], len(filtered_line) - 1)
