@@ -1,3 +1,6 @@
+import codecs
+
+
 class Fungespace:
     QUAD1 = 0
     QUAD2 = 1
