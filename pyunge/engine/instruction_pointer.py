@@ -1,8 +1,8 @@
 import copy
 import random
 
-from .instruction_mapping import InstructionMapping
-from .stackstack import StackStack
+from pyunge.engine.instruction_mapping import InstructionMapping
+from pyunge.engine.stackstack import StackStack
 
 
 class InstructionPointer:

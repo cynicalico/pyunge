@@ -1,3 +1,5 @@
+import sys
+
 import pyunge
 
 
@@ -15,6 +17,9 @@ def main():
 
             if res is pyunge.InstructionResult.KILL:
                 continue
+
+            elif res is pyunge.InstructionResult.QUIT:
+                sys.exit(params)
 
             ip.move(ins, fs)
 

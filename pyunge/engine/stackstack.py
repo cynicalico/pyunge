@@ -36,6 +36,11 @@ class StackStack:
     def clear(self):
         self.stacks[self.toss].clear()
 
+    def pick(self, n):
+        if n < len(self.stacks[self.toss]):
+            return self.stacks[self.toss][n]
+        return 0
+
     def begin_block(self, storage_offset):
         n = self.pop()
 
