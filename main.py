@@ -13,7 +13,6 @@ def main():
             ins = fs.get(*ip.pos)
 
             res, params = ip.instruction_mapping.perform(ins, ip, fs)
-            # print(f"ins: {ins} '{chr(ins)}', res: {res}, params: {params}")
 
             if res is pyunge.InstructionResult.KILL:
                 continue

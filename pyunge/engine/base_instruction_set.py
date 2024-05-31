@@ -49,8 +49,13 @@ def load_semantics(instruction_mapping, ins, ip, fs):
     fingerprint = 0
     for _ in range(n):
         fingerprint *= 256
-        fingerprint + ip.stack.pop()
-    ip.reverse()
+        fingerprint += ip.stack.pop()
+    success = instruction_mapping.load_fingerprint(ins, ip, fs, fingerprint)
+    if success:
+        ip.stack.push(fingerprint)
+        ip.stack.push(1)
+    else:
+        ip.reverse()
     return InstructionResult.NONE, None
 
 
@@ -59,8 +64,10 @@ def unload_semantics(instruction_mapping, ins, ip, fs):
     fingerprint = 0
     for _ in range(n):
         fingerprint *= 256
-        fingerprint + ip.stack.pop()
-    ip.reverse()
+        fingerprint += ip.stack.pop()
+    success = instruction_mapping.unload_fingerprint(ins, ip, fs, fingerprint)
+    if not success:
+        ip.reverse()
     return InstructionResult.NONE, None
 
 
@@ -182,11 +189,6 @@ def go_away(instruction_mapping, ins, ip, fs):
 def stop(instruction_mapping, ins, ip, fs):
     ip.alive = False
     return InstructionResult.KILL, None
-
-
-def fingerprint_defined(instruction_mapping, ins, ip, fs):
-    ip.reverse()  # TODO
-    return InstructionResult.NONE, None
 
 
 def turn_left(instruction_mapping, ins, ip, fs):
@@ -423,13 +425,9 @@ def get_sysinfo(instruction_mapping, ins, ip, fs):
     # fungespace storage offset of current IP
     sysinfo.extend(ip.storage_offset)
 
-    # TODO: This is the least point which has *ever* had a cell,
-    #       but if you were to change it to space it would still
-    #       think this is the minimum point
     # least point which contains a non-space cell
     sysinfo.extend(fs.min_coord)
 
-    # TODO: See above TODO, but for greatest point instead
     # greatest point which contains a non-space cell relative to the least
     sysinfo.extend([fs.max_coord[0] + abs(fs.min_coord[0]),
                     fs.max_coord[1] + abs(fs.min_coord[1])])

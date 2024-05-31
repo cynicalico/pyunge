@@ -1,105 +1,133 @@
+from collections import deque
+
+import pyunge.engine.fingerprints.MODU as MODU
+import pyunge.engine.fingerprints.ROMA as ROMA
 from pyunge.engine import base_instruction_set
 from pyunge.engine.instruction_result import InstructionResult
+
+
+class InstructionStack:
+    def __init__(self, fingerprint, f):
+        self.d = deque([(fingerprint, f)])
+
+    def __call__(self, *args, **kwargs):
+        return self.d[-1][1](*args, **kwargs)
+
+    def push(self, fingerprint, f):
+        self.d.append((fingerprint, f))
+
+    def pop(self, fingerprint):
+        # TODO: Is this seriously correct? Mycology seems to think so...
+        self.d.pop()
+        # for _ in range(len(self.d)):
+        #     item = self.d.popleft()
+        #     if item[0] != fingerprint:
+        #         self.d.append(item)
 
 
 class InstructionMapping:
     def __init__(self):
         self.mapping = {
             ord(' '): None,
-            ord('!'): base_instruction_set.logical_not,
-            ord('"'): base_instruction_set.toggle_stringmode,
-            ord('#'): base_instruction_set.trampoline,
-            ord('$'): base_instruction_set.pop,
-            ord('%'): base_instruction_set.remainder,
-            ord('&'): base_instruction_set.input_integer,
-            ord('\''): base_instruction_set.fetch_character,
-            ord('('): base_instruction_set.load_semantics,
-            ord(')'): base_instruction_set.unload_semantics,
-            ord('*'): base_instruction_set.multiply,
-            ord('+'): base_instruction_set.add,
-            ord(','): base_instruction_set.output_character,
-            ord('-'): base_instruction_set.subtract,
-            ord('.'): base_instruction_set.output_integer,
-            ord('/'): base_instruction_set.divide,
-            ord('0'): base_instruction_set.push_zero,
-            ord('1'): base_instruction_set.push_one,
-            ord('2'): base_instruction_set.push_two,
-            ord('3'): base_instruction_set.push_three,
-            ord('4'): base_instruction_set.push_four,
-            ord('5'): base_instruction_set.push_five,
-            ord('6'): base_instruction_set.push_six,
-            ord('7'): base_instruction_set.push_seven,
-            ord('8'): base_instruction_set.push_eight,
-            ord('9'): base_instruction_set.push_niner,
-            ord(':'): base_instruction_set.duplicate,
+            ord('!'): InstructionStack(None, base_instruction_set.logical_not),
+            ord('"'): InstructionStack(None, base_instruction_set.toggle_stringmode),
+            ord('#'): InstructionStack(None, base_instruction_set.trampoline),
+            ord('$'): InstructionStack(None, base_instruction_set.pop),
+            ord('%'): InstructionStack(None, base_instruction_set.remainder),
+            ord('&'): InstructionStack(None, base_instruction_set.input_integer),
+            ord('\''): InstructionStack(None, base_instruction_set.fetch_character),
+            ord('('): InstructionStack(None, base_instruction_set.load_semantics),
+            ord(')'): InstructionStack(None, base_instruction_set.unload_semantics),
+            ord('*'): InstructionStack(None, base_instruction_set.multiply),
+            ord('+'): InstructionStack(None, base_instruction_set.add),
+            ord(','): InstructionStack(None, base_instruction_set.output_character),
+            ord('-'): InstructionStack(None, base_instruction_set.subtract),
+            ord('.'): InstructionStack(None, base_instruction_set.output_integer),
+            ord('/'): InstructionStack(None, base_instruction_set.divide),
+            ord('0'): InstructionStack(None, base_instruction_set.push_zero),
+            ord('1'): InstructionStack(None, base_instruction_set.push_one),
+            ord('2'): InstructionStack(None, base_instruction_set.push_two),
+            ord('3'): InstructionStack(None, base_instruction_set.push_three),
+            ord('4'): InstructionStack(None, base_instruction_set.push_four),
+            ord('5'): InstructionStack(None, base_instruction_set.push_five),
+            ord('6'): InstructionStack(None, base_instruction_set.push_six),
+            ord('7'): InstructionStack(None, base_instruction_set.push_seven),
+            ord('8'): InstructionStack(None, base_instruction_set.push_eight),
+            ord('9'): InstructionStack(None, base_instruction_set.push_niner),
+            ord(':'): InstructionStack(None, base_instruction_set.duplicate),
             ord(';'): None,
-            ord('<'): base_instruction_set.go_west,
-            ord('='): base_instruction_set.execute,
-            ord('>'): base_instruction_set.go_east,
-            ord('?'): base_instruction_set.go_away,
-            ord('@'): base_instruction_set.stop,
-            ord('A'): None,
-            ord('B'): None,
-            ord('C'): None,
-            ord('D'): None,
-            ord('E'): None,
-            ord('F'): None,
-            ord('G'): None,
-            ord('H'): None,
-            ord('I'): None,
-            ord('J'): None,
-            ord('K'): None,
-            ord('L'): None,
-            ord('M'): None,
-            ord('N'): None,
-            ord('O'): None,
-            ord('P'): None,
-            ord('Q'): None,
-            ord('R'): None,
-            ord('S'): None,
-            ord('T'): None,
-            ord('U'): None,
-            ord('V'): None,
-            ord('W'): None,
-            ord('X'): None,
-            ord('Y'): None,
-            ord('Z'): None,
-            ord('['): base_instruction_set.turn_left,
-            ord('\\'): base_instruction_set.swap,
-            ord(']'): base_instruction_set.turn_right,
-            ord('^'): base_instruction_set.go_north,
-            ord('_'): base_instruction_set.east_west_if,
-            ord('`'): base_instruction_set.greater_than,
-            ord('a'): base_instruction_set.push_ten,
-            ord('b'): base_instruction_set.push_eleven,
-            ord('c'): base_instruction_set.push_twelve,
-            ord('d'): base_instruction_set.push_thirteen,
-            ord('e'): base_instruction_set.push_fourteen,
-            ord('f'): base_instruction_set.push_fifteen,
-            ord('g'): base_instruction_set.get,
-            ord('h'): base_instruction_set.go_high,
-            ord('i'): base_instruction_set.input_file,
-            ord('j'): base_instruction_set.jump_forward,
-            ord('k'): base_instruction_set.iterate,
-            ord('l'): base_instruction_set.go_low,
-            ord('m'): base_instruction_set.high_low_if,
-            ord('n'): base_instruction_set.clear_stack,
-            ord('o'): base_instruction_set.output_file,
-            ord('p'): base_instruction_set.put,
-            ord('q'): base_instruction_set.quit,
-            ord('r'): base_instruction_set.reflect,
-            ord('s'): base_instruction_set.store_character,
-            ord('t'): base_instruction_set.split,
-            ord('u'): base_instruction_set.stack_under_stack,
-            ord('v'): base_instruction_set.go_south,
-            ord('w'): base_instruction_set.compare,
-            ord('x'): base_instruction_set.absolute_delta,
-            ord('y'): base_instruction_set.get_sysinfo,
-            ord('z'): base_instruction_set.no_operation,
-            ord('{'): base_instruction_set.begin_block,
-            ord('|'): base_instruction_set.north_south_if,
-            ord('}'): base_instruction_set.end_block,
-            ord('~'): base_instruction_set.input_character,
+            ord('<'): InstructionStack(None, base_instruction_set.go_west),
+            ord('='): InstructionStack(None, base_instruction_set.execute),
+            ord('>'): InstructionStack(None, base_instruction_set.go_east),
+            ord('?'): InstructionStack(None, base_instruction_set.go_away),
+            ord('@'): InstructionStack(None, base_instruction_set.stop),
+            ord('A'): InstructionStack(None, base_instruction_set.reflect),
+            ord('B'): InstructionStack(None, base_instruction_set.reflect),
+            ord('C'): InstructionStack(None, base_instruction_set.reflect),
+            ord('D'): InstructionStack(None, base_instruction_set.reflect),
+            ord('E'): InstructionStack(None, base_instruction_set.reflect),
+            ord('F'): InstructionStack(None, base_instruction_set.reflect),
+            ord('G'): InstructionStack(None, base_instruction_set.reflect),
+            ord('H'): InstructionStack(None, base_instruction_set.reflect),
+            ord('I'): InstructionStack(None, base_instruction_set.reflect),
+            ord('J'): InstructionStack(None, base_instruction_set.reflect),
+            ord('K'): InstructionStack(None, base_instruction_set.reflect),
+            ord('L'): InstructionStack(None, base_instruction_set.reflect),
+            ord('M'): InstructionStack(None, base_instruction_set.reflect),
+            ord('N'): InstructionStack(None, base_instruction_set.reflect),
+            ord('O'): InstructionStack(None, base_instruction_set.reflect),
+            ord('P'): InstructionStack(None, base_instruction_set.reflect),
+            ord('Q'): InstructionStack(None, base_instruction_set.reflect),
+            ord('R'): InstructionStack(None, base_instruction_set.reflect),
+            ord('S'): InstructionStack(None, base_instruction_set.reflect),
+            ord('T'): InstructionStack(None, base_instruction_set.reflect),
+            ord('U'): InstructionStack(None, base_instruction_set.reflect),
+            ord('V'): InstructionStack(None, base_instruction_set.reflect),
+            ord('W'): InstructionStack(None, base_instruction_set.reflect),
+            ord('X'): InstructionStack(None, base_instruction_set.reflect),
+            ord('Y'): InstructionStack(None, base_instruction_set.reflect),
+            ord('Z'): InstructionStack(None, base_instruction_set.reflect),
+            ord('['): InstructionStack(None, base_instruction_set.turn_left),
+            ord('\\'): InstructionStack(None, base_instruction_set.swap),
+            ord(']'): InstructionStack(None, base_instruction_set.turn_right),
+            ord('^'): InstructionStack(None, base_instruction_set.go_north),
+            ord('_'): InstructionStack(None, base_instruction_set.east_west_if),
+            ord('`'): InstructionStack(None, base_instruction_set.greater_than),
+            ord('a'): InstructionStack(None, base_instruction_set.push_ten),
+            ord('b'): InstructionStack(None, base_instruction_set.push_eleven),
+            ord('c'): InstructionStack(None, base_instruction_set.push_twelve),
+            ord('d'): InstructionStack(None, base_instruction_set.push_thirteen),
+            ord('e'): InstructionStack(None, base_instruction_set.push_fourteen),
+            ord('f'): InstructionStack(None, base_instruction_set.push_fifteen),
+            ord('g'): InstructionStack(None, base_instruction_set.get),
+            ord('h'): InstructionStack(None, base_instruction_set.go_high),
+            ord('i'): InstructionStack(None, base_instruction_set.input_file),
+            ord('j'): InstructionStack(None, base_instruction_set.jump_forward),
+            ord('k'): InstructionStack(None, base_instruction_set.iterate),
+            ord('l'): InstructionStack(None, base_instruction_set.go_low),
+            ord('m'): InstructionStack(None, base_instruction_set.high_low_if),
+            ord('n'): InstructionStack(None, base_instruction_set.clear_stack),
+            ord('o'): InstructionStack(None, base_instruction_set.output_file),
+            ord('p'): InstructionStack(None, base_instruction_set.put),
+            ord('q'): InstructionStack(None, base_instruction_set.quit),
+            ord('r'): InstructionStack(None, base_instruction_set.reflect),
+            ord('s'): InstructionStack(None, base_instruction_set.store_character),
+            ord('t'): InstructionStack(None, base_instruction_set.split),
+            ord('u'): InstructionStack(None, base_instruction_set.stack_under_stack),
+            ord('v'): InstructionStack(None, base_instruction_set.go_south),
+            ord('w'): InstructionStack(None, base_instruction_set.compare),
+            ord('x'): InstructionStack(None, base_instruction_set.absolute_delta),
+            ord('y'): InstructionStack(None, base_instruction_set.get_sysinfo),
+            ord('z'): InstructionStack(None, base_instruction_set.no_operation),
+            ord('{'): InstructionStack(None, base_instruction_set.begin_block),
+            ord('|'): InstructionStack(None, base_instruction_set.north_south_if),
+            ord('}'): InstructionStack(None, base_instruction_set.end_block),
+            ord('~'): InstructionStack(None, base_instruction_set.input_character),
+        }
+
+        self.known_fingerprints = {
+            MODU.ID: MODU.MAPPING,
+            ROMA.ID: ROMA.MAPPING
         }
 
     def perform(self, ins, ip, fs):
@@ -114,3 +142,23 @@ class InstructionMapping:
         else:
             ip.reverse()
             return InstructionResult.NONE, None
+
+    def load_fingerprint(self, ins, ip, fs, fingerprint):
+        f_mapping = self.known_fingerprints.get(fingerprint)
+        if f_mapping is not None:
+            for k, v in f_mapping.items():
+                ins_stack = self.mapping.get(k)
+                if ins_stack is not None:
+                    ins_stack.push(fingerprint, v)
+            return True
+        return False
+
+    def unload_fingerprint(self, ins, ip, fs, fingerprint):
+        f_mapping = self.known_fingerprints.get(fingerprint)
+        if f_mapping is not None:
+            for k, v in f_mapping.items():
+                ins_stack = self.mapping.get(k)
+                if ins_stack is not None:
+                    ins_stack.pop(fingerprint)
+            return True
+        return False
