@@ -1,5 +1,6 @@
-from pyunge.engine.instruction_result import InstructionResult
 import math
+
+from pyunge.engine.instruction_result import InstructionResult
 
 
 def modu_m(instruction_mapping, ins, ip, fs):

@@ -37,6 +37,7 @@ class StackStack:
         self.stacks[self.toss].clear()
 
     def pick(self, n):
+        n = len(self.stacks[self.toss]) - n
         if n < len(self.stacks[self.toss]):
             return self.stacks[self.toss][n]
         return 0
