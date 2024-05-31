@@ -144,20 +144,20 @@ class InstructionMapping:
             return InstructionResult.NONE, None
 
     def load_fingerprint(self, ins, ip, fs, fingerprint):
-        f_mapping = self.known_fingerprints.get(fingerprint)
-        if f_mapping is not None:
-            for k, v in f_mapping.items():
-                ins_stack = self.mapping.get(k)
+        fingerprint_mapping = self.known_fingerprints.get(fingerprint)
+        if fingerprint_mapping is not None:
+            for mapped_ins, f in fingerprint_mapping.items():
+                ins_stack = self.mapping.get(mapped_ins)
                 if ins_stack is not None:
-                    ins_stack.push(fingerprint, v)
+                    ins_stack.push(fingerprint, f)
             return True
         return False
 
     def unload_fingerprint(self, ins, ip, fs, fingerprint):
-        f_mapping = self.known_fingerprints.get(fingerprint)
-        if f_mapping is not None:
-            for k, v in f_mapping.items():
-                ins_stack = self.mapping.get(k)
+        fingerprint_mapping = self.known_fingerprints.get(fingerprint)
+        if fingerprint_mapping is not None:
+            for mapped_ins, _ in fingerprint_mapping.items():
+                ins_stack = self.mapping.get(mapped_ins)
                 if ins_stack is not None:
                     ins_stack.pop(fingerprint)
             return True

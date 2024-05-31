@@ -10,11 +10,11 @@ def modu_m(instruction_mapping, ins, ip, fs):
 
 
 def modu_u(instruction_mapping, ins, ip, fs):
-    # FIXME: I can't find any info on what "Sam Holden's Unsigned Modulo" is, but this
-    #        does give the correct answer for the single Mycology test case
-    b = ip.stack.pop()
-    a = ip.stack.pop()
-    ip.stack.push(0 if b == 0 else abs(a) % abs(b))
+    # This is what rcfunge does, possibly should be math.remainder(a, b)
+    # but without more test programs that actually use it, who knows
+    b = abs(ip.stack.pop())
+    a = abs(ip.stack.pop())
+    ip.stack.push(0 if b == 0 else a % b)
     return InstructionResult.NONE, None
 
 
