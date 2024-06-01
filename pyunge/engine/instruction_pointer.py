@@ -6,6 +6,8 @@ from pyunge.engine.stackstack import StackStack
 
 
 class InstructionPointer:
+    next_id = 1
+
     def __init__(self, *, pos=None, delta=None):
         self.pos = pos or [0, 0]
         self.saved_pos = None
@@ -16,6 +18,19 @@ class InstructionPointer:
         self.stack = StackStack()
         self.storage_offset = [0, 0]
         self.instruction_mapping = InstructionMapping()
+        self.id = InstructionPointer.next_id
+        self.cache_ins = None
+        InstructionPointer.next_id += 1
+
+    def make_copy(self):
+        new_ip = InstructionPointer()
+        new_ip.pos = self.pos[:]
+        new_ip.delta = self.delta[:]
+        new_ip.stringmode = self.stringmode
+        new_ip.stack = copy.deepcopy(self.stack)
+        new_ip.storage_offset = self.storage_offset[:]
+        new_ip.instruction_mapping = copy.deepcopy(self.instruction_mapping)
+        return new_ip
 
     def step_(self):
         self.pos[0] += self.delta[0]
@@ -26,8 +41,8 @@ class InstructionPointer:
         if not fs.in_bounds(*self.pos):
             self.wrap(fs)
 
-    def move(self, last_ins, fs):
-        skipping = False
+    def move(self, last_ins, fs, start_skipping=False):
+        skipping = start_skipping
 
         while True:
             self.step(fs)
@@ -35,8 +50,9 @@ class InstructionPointer:
 
             if self.stringmode:
                 if skipping:
-                    if ins != ord(' '):
-                        skipping = False
+                    if ins == ord(' '):
+                        continue
+                    skipping = False
                 elif ins == ord(' ') and last_ins == ord(' '):
                     skipping = True
                     continue
@@ -45,7 +61,7 @@ class InstructionPointer:
                 if ins == ord(';'):
                     skipping = True
                     continue
-                if ins == ord(' '):
+                elif ins == ord(' '):
                     continue
 
             elif skipping:

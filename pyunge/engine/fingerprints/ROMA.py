@@ -3,37 +3,37 @@ from pyunge.engine.instruction_result import InstructionResult
 
 def roma_c(instruction_mapping, ins, ip, fs):
     ip.stack.push(100)
-    return InstructionResult.NONE, None
+    return InstructionResult.MOVE, None
 
 
 def roma_d(instruction_mapping, ins, ip, fs):
     ip.stack.push(500)
-    return InstructionResult.NONE, None
+    return InstructionResult.MOVE, None
 
 
 def roma_i(instruction_mapping, ins, ip, fs):
     ip.stack.push(1)
-    return InstructionResult.NONE, None
+    return InstructionResult.MOVE, None
 
 
 def roma_l(instruction_mapping, ins, ip, fs):
     ip.stack.push(50)
-    return InstructionResult.NONE, None
+    return InstructionResult.MOVE, None
 
 
 def roma_m(instruction_mapping, ins, ip, fs):
     ip.stack.push(1000)
-    return InstructionResult.NONE, None
+    return InstructionResult.MOVE, None
 
 
 def roma_v(instruction_mapping, ins, ip, fs):
     ip.stack.push(5)
-    return InstructionResult.NONE, None
+    return InstructionResult.MOVE, None
 
 
 def roma_x(instruction_mapping, ins, ip, fs):
     ip.stack.push(10)
-    return InstructionResult.NONE, None
+    return InstructionResult.MOVE, None
 
 
 ID = 0x524f4d41

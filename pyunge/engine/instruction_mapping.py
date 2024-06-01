@@ -134,14 +134,14 @@ class InstructionMapping:
         if ip.stringmode:
             if ins != ord('"'):
                 ip.stack.push(ins)
-                return InstructionResult.NONE, None
+                return InstructionResult.MOVE, None
 
         f = self.mapping.get(ins)
         if f is not None:
             return f(self, ins, ip, fs)
         else:
             ip.reverse()
-            return InstructionResult.NONE, None
+            return InstructionResult.MOVE, None
 
     def load_fingerprint(self, ins, ip, fs, fingerprint):
         fingerprint_mapping = self.known_fingerprints.get(fingerprint)

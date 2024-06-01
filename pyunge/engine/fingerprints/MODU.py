@@ -7,7 +7,7 @@ def modu_m(instruction_mapping, ins, ip, fs):
     b = ip.stack.pop()
     a = ip.stack.pop()
     ip.stack.push(0 if b == 0 else a % b)
-    return InstructionResult.NONE, None
+    return InstructionResult.MOVE, None
 
 
 def modu_u(instruction_mapping, ins, ip, fs):
@@ -16,14 +16,14 @@ def modu_u(instruction_mapping, ins, ip, fs):
     b = abs(ip.stack.pop())
     a = abs(ip.stack.pop())
     ip.stack.push(0 if b == 0 else a % b)
-    return InstructionResult.NONE, None
+    return InstructionResult.MOVE, None
 
 
 def modu_r(instruction_mapping, ins, ip, fs):
     b = ip.stack.pop()
     a = ip.stack.pop()
     ip.stack.push(0 if b == 0 else math.remainder(a, b))
-    return InstructionResult.NONE, None
+    return InstructionResult.MOVE, None
 
 
 ID = 0x4d4f4455
