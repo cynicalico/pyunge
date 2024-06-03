@@ -271,7 +271,39 @@ def go_high(instruction_mapping, ins, ip, fs):
 
 
 def input_file(instruction_mapping, ins, ip, fs):
-    ip.reverse()  # TODO
+    filename = ip.stack.pop_0gnirts()
+    flags = ip.stack.pop()
+    va_r, va_c = ip.stack.pop_vector(ip)
+    binary_mode = flags & 0b1 == 1
+
+    try:
+        vb_r = 0
+        vb_c = 0
+
+        with open(filename, 'r') as f:
+            for line in f:
+                if not binary_mode:
+                    line = list(filter(lambda c: c not in [chr(10), chr(13)], line))
+
+                for idx, c in enumerate(line):
+                    if not binary_mode and c == chr(fs.EMPTY):
+                        continue
+
+                    fs.put(va_r + vb_r, va_c + idx, c)
+                vb_c = max(vb_c, idx + 1)
+
+                vb_r += 1
+
+        ip.stack.push(vb_c)
+        ip.stack.push(vb_r)
+        ip.stack.push(va_c)
+        ip.stack.push(va_r)
+
+        print(f">>> Input '{filename}' at {va_r}, {va_c}, {vb_r}x{vb_c} in {'binary' if binary_mode else 'text'} mode")
+
+    except (FileNotFoundError, PermissionError, OSError):
+        ip.reverse()
+
     return InstructionResult.MOVE, None
 
 
@@ -315,7 +347,41 @@ def clear_stack(instruction_mapping, ins, ip, fs):
 
 
 def output_file(instruction_mapping, ins, ip, fs):
-    ip.reverse()  # TODO
+    # TODO: This is not working somehow, figure out why
+
+    filename = ip.stack.pop_0gnirts()
+    flags = ip.stack.pop()
+    va_r, va_c = ip.stack.pop_vector(ip)
+    vb_r, vb_c = ip.stack.pop_vector()
+    linear = flags & 0b1 == 1
+
+    try:
+        contents = ''
+        for r in range(va_r, va_r + vb_r):
+            if r != va_r:
+                contents += '\n'
+
+            n_spaces = 0
+            for c in range(va_c, va_c + vb_c):
+                v = fs.get(r, c)
+                if v == ord(' '):
+                    n_spaces += 1
+                else:
+                    contents += ' ' * n_spaces
+                    n_spaces = 0
+                    contents += chr(v)
+            if not linear:
+                contents += ' ' * n_spaces
+        if linear:
+            while contents[-1] == '\n':
+                contents = contents[:-1]
+
+        with open(filename, 'w') as f:
+            f.write(contents)
+
+    except (FileNotFoundError, PermissionError, OSError):
+        ip.reverse()
+
     return InstructionResult.MOVE, None
 
 
@@ -385,7 +451,7 @@ def get_sysinfo(instruction_mapping, ins, ip, fs):
     # 0x04: high if o is implemented
     # 0x08: high if = is implemented
     # 0x10: high if unbuffered stdio
-    sysinfo.append(0b00001)
+    sysinfo.append(0b00111)
 
     # number of bytes per cell
     sysinfo.append(math.inf)

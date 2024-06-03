@@ -1,3 +1,6 @@
+from pyunge.engine.errors import GnirtsError
+
+
 class StackStack:
     def __init__(self):
         self.stacks = [[]]
@@ -21,6 +24,26 @@ class StackStack:
         if len(self.stacks[i]) == 0:
             return 0
         return self.stacks[i].pop()
+
+    def pop_vector(self, ip=None):
+        r = self.pop()
+        c = self.pop()
+        if ip is not None:
+            r += ip.storage_offset[0]
+            c += ip.storage_offset[1]
+        return r, c
+
+    def pop_0gnirts(self):
+        s = ''
+        while True:
+            c = self.pop()
+            if c == ord('\0'):
+                break
+            try:
+                s += chr(c)
+            except ValueError as e:
+                raise GnirtsError(f"Failed to convert value '{c}' to char while popping 0gnirts")
+        return s
 
     def duplicate(self):
         v = self.pop()
